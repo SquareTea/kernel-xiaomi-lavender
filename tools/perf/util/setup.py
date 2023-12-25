@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 
 from distutils.core import setup, Extension
 from os import getenv
@@ -32,7 +32,7 @@ ext_sources = [f.strip() for f in file('util/python-ext-sources')
 				if len(f.strip()) > 0 and f[0] != '#']
 
 # use full paths with source files
-ext_sources = map(lambda x: '%s/%s' % (src_perf, x) , ext_sources)
+ext_sources = ['%s/%s' % (src_perf, x) for x in ext_sources]
 
 perf = Extension('perf',
 		  sources = ext_sources,
@@ -44,8 +44,8 @@ perf = Extension('perf',
 setup(name='perf',
       version='0.1',
       description='Interface with the Linux profiling infrastructure',
-      author='Arnaldo Carvalho de Melo',
-      author_email='acme@redhat.com',
+      author='Arnaldo Carvalho de Melo, Semenov German',
+      author_email='acme@redhat.com, GermanAizek@yandex.ru',
       license='GPLv2',
       url='http://perf.wiki.kernel.org',
       ext_modules=[perf],

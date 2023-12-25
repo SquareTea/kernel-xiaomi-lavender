@@ -1,5 +1,6 @@
-#!/usr/bin/python2
+#!/usr/bin/python3
 # call-graph-from-postgresql.py: create call-graph from postgresql database
+# Copyright (c) 2023, Semenov German <GermanAizek@yandex.ru>
 # Copyright (c) 2014, Intel Corporation.
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -83,7 +84,7 @@ class TreeItem():
 		ret = query.exec_('SELECT id, comm FROM comms')
 		if not ret:
 			raise Exception("Query failed: " + query.lastError().text())
-		while query.next():
+		while next(query):
 			if not query.value(0):
 				continue
 			child_item = TreeItem(self.db, self.child_count, self)
@@ -101,7 +102,7 @@ class TreeItem():
 		ret = query.exec_('SELECT thread_id, ( SELECT pid FROM threads WHERE id = thread_id ), ( SELECT tid FROM threads WHERE id = thread_id ) FROM comm_threads WHERE comm_id = ' + str(comm_id))
 		if not ret:
 			raise Exception("Query failed: " + query.lastError().text())
-		while query.next():
+		while next(query):
 			child_item = TreeItem(self.db, self.child_count, self)
 			self.child_items.append(child_item)
 			self.child_count += 1
@@ -171,7 +172,7 @@ class TreeItem():
 		total_branch_count = 0
 		time = 0
 		total_time = 0
-		while query.next():
+		while next(query):
 			if query.value(1) == last_call_path_id:
 				count += 1
 				branch_count += query.value(2)
@@ -291,7 +292,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == '__main__':
 	if (len(sys.argv) < 2):
-		print >> sys.stderr, "Usage is: call-graph-from-postgresql.py <database name>"
+		print("Usage is: call-graph-from-postgresql.py <database name>", file=sys.stderr)
 		raise Exception("Too few arguments")
 
 	dbname = sys.argv[1]

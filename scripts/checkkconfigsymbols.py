@@ -1,7 +1,8 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 """Find Kconfig symbols that are referenced but not defined."""
 
+# (c) 2023 Semenov German <GermanAizek@yandex.ru>
 # (c) 2014-2015 Valentin Rothberg <valentinrothberg@gmail.com>
 # (c) 2014 Stefan Hengelein <stefan.hengelein@fau.de>
 #
@@ -138,19 +139,19 @@ def main():
             # feature has not been undefined before
             if not feature in undefined_a:
                 files = sorted(undefined_b.get(feature))
-                print "%s\t%s" % (yel(feature), ", ".join(files))
+                print("%s\t%s" % (yel(feature), ", ".join(files)))
                 if opts.find:
                     commits = find_commits(feature, opts.diff)
-                    print red(commits)
+                    print(red(commits))
             # check if there are new files that reference the undefined feature
             else:
                 files = sorted(undefined_b.get(feature) -
                                undefined_a.get(feature))
                 if files:
-                    print "%s\t%s" % (yel(feature), ", ".join(files))
+                    print("%s\t%s" % (yel(feature), ", ".join(files)))
                     if opts.find:
                         commits = find_commits(feature, opts.diff)
-                        print red(commits)
+                        print(red(commits))
 
         # reset to head
         execute("git reset --hard %s" % head)
@@ -160,7 +161,7 @@ def main():
         undefined = check_symbols(opts.ignore)
         for feature in sorted(undefined):
             files = sorted(undefined.get(feature))
-            print "%s\t%s" % (yel(feature), ", ".join(files))
+            print("%s\t%s" % (yel(feature), ", ".join(files)))
 
 
 def yel(string):
