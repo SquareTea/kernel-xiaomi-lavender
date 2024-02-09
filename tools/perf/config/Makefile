@@ -152,12 +152,12 @@ ifndef NO_LIBPYTHON
   # python[2][-config] in weird combinations but always preferring
   # python2 and python2-config as per pep-0394. If we catch a
   # python[-config] in version 3, the version check will kill it.
-  PYTHON2 := $(if $(call get-executable,python2),python2,python)
-  override PYTHON := $(call get-executable-or-default,PYTHON,$(PYTHON2))
-  PYTHON2_CONFIG := \
+  PYTHON3 := $(if $(call get-executable,python3),python3,python)
+  override PYTHON := $(call get-executable-or-default,PYTHON,$(PYTHON3))
+  PYTHON3_CONFIG := \
     $(if $(call get-executable,$(PYTHON)-config),$(PYTHON)-config,python-config)
   override PYTHON_CONFIG := \
-    $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON2_CONFIG))
+    $(call get-executable-or-default,PYTHON_CONFIG,$(PYTHON3_CONFIG))
 
   PYTHON_CONFIG_SQ := $(call shell-sq,$(PYTHON_CONFIG))
 
@@ -516,7 +516,7 @@ else
           $(warning If you also have Python 2 installed, then)
           $(warning try something like:)
           $(warning $(and ,))
-          $(warning $(and ,)  make PYTHON=python2)
+          $(warning $(and ,)  make PYTHON=python3)
           $(warning $(and ,))
           $(warning Otherwise, disable Python support entirely:)
           $(warning $(and ,))
