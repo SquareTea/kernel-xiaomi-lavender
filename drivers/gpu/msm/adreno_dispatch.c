@@ -1176,12 +1176,6 @@ static inline int _verify_cmdobj(struct kgsl_device_private *dev_priv,
 					&ADRENO_CONTEXT(context)->base, ib)
 					== false)
 					return -EINVAL;
-			/*
-			 * Clear the wake on touch bit to indicate an IB has
-			 * been submitted since the last time we set it.
-			 * But only clear it when we have rendering commands.
-			 */
-			device->flags &= ~KGSL_FLAG_WAKE_ON_TOUCH;
 		}
 
 		/* A3XX does not have support for drawobj profiling */
@@ -1210,7 +1204,16 @@ static inline int _wait_for_room_in_context_queue(
 		spin_lock(&drawctxt->lock);
 		trace_adreno_drawctxt_wake(drawctxt);
 
-		if (ret <= 0)
+		/*
+		 * Account for the possibility that the context got invalidated
+		 * while we were sleeping
+		 */
+
+		if (ret >= 1) {
+			ret = _check_context_state(&drawctxt->base);
+			if (ret)
+				return ret;
+		} else
 			return (ret == 0) ? -ETIMEDOUT : (int) ret;
 	}
 
@@ -1225,15 +1228,7 @@ static unsigned int _check_context_state_to_queue_cmds(
 	if (ret)
 		return ret;
 
-	ret = _wait_for_room_in_context_queue(drawctxt);
-	if (ret)
-		return ret;
-
-	/*
-	 * Account for the possiblity that the context got invalidated
-	 * while we were sleeping
-	 */
-	return _check_context_state(&drawctxt->base);
+	return _wait_for_room_in_context_queue(drawctxt);
 }
 
 static void _queue_drawobj(struct adreno_context *drawctxt,
